@@ -1,0 +1,11 @@
+.job-list {
+  margin-top: 2rem;
+}
+
+.empty-state {
+  background: white;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 12px;
+  color: #777;
+}
