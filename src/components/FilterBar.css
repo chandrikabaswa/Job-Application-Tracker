@@ -1,6 +1,14 @@
 .filter-select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #dcdcdc;
-  border-radius: 6px;
+  padding: 12px;
+
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+
+  transition: 0.2s;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #2563eb;
 }

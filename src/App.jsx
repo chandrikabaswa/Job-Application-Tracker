@@ -4,6 +4,7 @@ import { JobList } from "./components/JobList";
 import { SearchBar } from "./components/SearchBar";
 import { FilterBar } from "./components/FilterBar";
 import { DashboardStats } from "./components/DashboardStats";
+import axios from "axios";
 import "./App.css";
 
 function App() {
@@ -11,40 +12,42 @@ function App() {
 
   const [filterStatus, setFilterStatus] = useState("All");
 
-  const [jobs, setJobs] = useState(() => {
-    const savedJobs = localStorage.getItem("jobs");
-
-    return savedJobs ? JSON.parse(savedJobs) : [];
-  });
+  const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("jobs", JSON.stringify(jobs));
-  }, [jobs]);
+    async function fetchJobs() {
+      try {
+        const response = await axios.get("http://localhost:3000/jobs");
 
-  function addJob(newJob) {
-    setJobs((prevJobs) => [
-      ...prevJobs,
-      {
-        id: Date.now(),
-        dateAdded: new Date().toLocaleDateString(),
-        ...newJob,
-      },
-    ]);
+        setJobs(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchJobs();
+  }, []);
+
+  async function addJob(newJob) {
+    const response = await axios.post("http://localhost:3000/jobs", newJob);
+
+    setJobs((prevJobs) => [...prevJobs, response.data]);
   }
 
-  function deleteJob(id) {
+  async function deleteJob(id) {
+    await axios.delete(`http://localhost:3000/jobs/${id}`);
+
     setJobs((prevJobs) => prevJobs.filter((job) => job.id !== id));
   }
 
-  function updateStatus(id, newStatus) {
+  async function updateStatus(id, newStatus) {
+    await axios.put(`http://localhost:3000/jobs/${id}`, {
+      status: newStatus,
+    });
+
     setJobs((prevJobs) =>
       prevJobs.map((job) =>
-        job.id === id
-          ? {
-              ...job,
-              status: newStatus,
-            }
-          : job,
+        job.id === id ? { ...job, status: newStatus } : job,
       ),
     );
   }
